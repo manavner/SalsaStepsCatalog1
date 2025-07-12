@@ -43,8 +43,8 @@ export default function StepsScreen() {
       
       setSteps(data);
     } catch (error) {
-      console.warn('Load data error:', error);
-      // Don't show alert since we have fallback data
+      console.log('Load data error handled gracefully:', error.message);
+      // Fallback data is already handled in loadStepsData
     } finally {
       setLoading(false);
     }

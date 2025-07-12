@@ -55,8 +55,8 @@ export async function loadStepsData(): Promise<SalsaStep[]> {
     });
     
     if (!response.ok) {
-      console.warn(`Google Sheets request failed with status: ${response.status}`);
-      console.warn('Using fallback data instead');
+      console.log(`Google Sheets request failed with status: ${response.status}`);
+      console.log('Using fallback data instead');
       return FALLBACK_DATA;
     }
     
@@ -72,13 +72,13 @@ export async function loadStepsData(): Promise<SalsaStep[]> {
     
     // If parsing results in empty data, use fallback
     if (parsedData.length === 0) {
-      console.warn('Parsed data is empty, using fallback data');
+      console.log('Parsed data is empty, using fallback data');
       return FALLBACK_DATA;
     }
     
     return parsedData;
   } catch (error) {
-    console.error('Error loading steps data:', error);
+    console.log('Network error occurred, using fallback data:', error.message);
     console.log('Using fallback data due to error');
     return FALLBACK_DATA;
   }
