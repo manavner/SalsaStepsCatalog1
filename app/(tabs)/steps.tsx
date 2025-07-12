@@ -18,9 +18,21 @@ export default function StepsScreen() {
   const loadData = async () => {
     try {
       setLoading(true);
+      console.log('Loading fresh data...');
       const data = await loadStepsData();
+      console.log('Loaded steps count:', data.length);
+      
+      // Log the specific step we're looking for
+      const enchufalaStep = data.find(step => 
+        step.stepName.toLowerCase().includes('enchufala con chufala')
+      );
+      if (enchufalaStep) {
+        console.log('Found Enchufala con chufala step:', enchufalaStep);
+      }
+      
       setSteps(data);
     } catch (error) {
+      console.error('Load data error:', error);
       Alert.alert('Error', 'Failed to load steps data. Please try again.');
     } finally {
       setLoading(false);

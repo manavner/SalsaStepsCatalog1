@@ -1,15 +1,27 @@
 import { SalsaStep } from '@/types/SalsaStep';
 
-const CSV_URL = 'https://docs.google.com/spreadsheets/d/1lHXna6z1NX3UNEQ-ujRVr3BF8MFY05_z1H7TUKPVuhM/export?format=csv';
+const BASE_CSV_URL = 'https://docs.google.com/spreadsheets/d/1lHXna6z1NX3UNEQ-ujRVr3BF8MFY05_z1H7TUKPVuhM/export?format=csv';
 
 export async function loadStepsData(): Promise<SalsaStep[]> {
   try {
-    const response = await fetch(CSV_URL);
+    // Add cache busting parameter to ensure fresh data
+    const csvUrl = `${BASE_CSV_URL}&cachebust=${Date.now()}`;
+    
+    const response = await fetch(csvUrl, {
+      cache: 'no-cache',
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    });
+    
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     
     const csvText = await response.text();
+    console.log('Loaded CSV data:', csvText.substring(0, 200) + '...');
     return parseCSV(csvText);
   } catch (error) {
     console.error('Error loading steps data:', error);
