@@ -1,18 +1,24 @@
 import { SalsaStep } from '@/types/SalsaStep';
 
-const BASE_CSV_URL = 'https://docs.google.com/spreadsheets/d/1lHXna6z1NX3UNEQ-ujRVr3BF8MFY05_z1H7TUKPVuhM/export?format=csv';
+const SHEET_ID = '1lHXna6z1NX3UNEQ-ujRVr3BF8MFY05_z1H7TUKPVuhM';
 
 export async function loadStepsData(): Promise<SalsaStep[]> {
   try {
-    // Add cache busting parameter to ensure fresh data
-    const csvUrl = `${BASE_CSV_URL}&cachebust=${Date.now()}`;
+    // Multiple cache busting strategies
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substring(7);
+    const csvUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0&cachebust=${timestamp}&rand=${random}&_=${timestamp}`;
+    
+    console.log('Fetching from URL:', csvUrl);
     
     const response = await fetch(csvUrl, {
-      cache: 'no-cache',
+      method: 'GET',
+      cache: 'no-store',
       headers: {
         'Cache-Control': 'no-cache, no-store, must-revalidate',
         'Pragma': 'no-cache',
-        'Expires': '0'
+        'Expires': '0',
+        'If-Modified-Since': 'Thu, 01 Jan 1970 00:00:00 GMT'
       }
     });
     
@@ -21,7 +27,12 @@ export async function loadStepsData(): Promise<SalsaStep[]> {
     }
     
     const csvText = await response.text();
-    console.log('Loaded CSV data:', csvText.substring(0, 200) + '...');
+    console.log('Raw CSV length:', csvText.length);
+    console.log('First 300 chars:', csvText.substring(0, 300));
+    
+    // Look for the specific step in raw data
+    const hasEnchufala = csvText.toLowerCase().includes('enchufala con chufala');
+    console.log('Raw CSV contains "enchufala con chufala":', hasEnchufala);
     return parseCSV(csvText);
   } catch (error) {
     console.error('Error loading steps data:', error);
@@ -35,6 +46,8 @@ function parseCSV(csvText: string): SalsaStep[] {
   // Skip header row
   const dataLines = lines.slice(1);
   
+  console.log('Total data lines to parse:', dataLines.length);
+  
   return dataLines.map(line => {
     // Simple CSV parsing - handles basic cases
     const values = parseCSVLine(line);
@@ -46,7 +59,13 @@ function parseCSV(csvText: string): SalsaStep[] {
       type: values[3]?.trim() || '',
       link: values[4]?.trim() || '',
     };
-  }).filter(step => step.stepName); // Filter out empty rows
+  }).filter(step => {
+    const hasName = !!step.stepName;
+    if (step.stepName.toLowerCase().includes('enchufala con chufala')) {
+      console.log('Parsed Enchufala step:', step);
+    }
+    return hasName;
+  }); // Filter out empty rows
 }
 
 function parseCSVLine(line: string): string[] {

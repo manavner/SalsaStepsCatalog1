@@ -18,16 +18,27 @@ export default function StepsScreen() {
   const loadData = async () => {
     try {
       setLoading(true);
-      console.log('Loading fresh data...');
+      console.log('=== LOADING FRESH DATA ===');
+      console.log('Timestamp:', new Date().toISOString());
       const data = await loadStepsData();
-      console.log('Loaded steps count:', data.length);
+      console.log('=== DATA LOADED ===');
+      console.log('Total steps loaded:', data.length);
       
       // Log the specific step we're looking for
       const enchufalaStep = data.find(step => 
         step.stepName.toLowerCase().includes('enchufala con chufala')
       );
       if (enchufalaStep) {
-        console.log('Found Enchufala con chufala step:', enchufalaStep);
+        console.log('=== FOUND ENCHUFALA STEP ===');
+        console.log('Step name:', enchufalaStep.stepName);
+        console.log('Link:', enchufalaStep.link);
+        console.log('Full step object:', JSON.stringify(enchufalaStep, null, 2));
+      } else {
+        console.log('=== ENCHUFALA STEP NOT FOUND ===');
+        console.log('Available step names:');
+        data.forEach((step, index) => {
+          console.log(`${index + 1}. "${step.stepName}"`);
+        });
       }
       
       setSteps(data);
