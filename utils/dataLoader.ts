@@ -1,6 +1,9 @@
 import { SalsaStep } from '@/types/SalsaStep';
 
-const SHEET_ID = '1lHXna6z1NX3UNEQ-ujRVr3BF8MFY05_z1H7TUKPVuhM';
+// You need to publish your Google Sheet to web and get the published ID
+// Go to File > Share > Publish to web > Select CSV format > Publish
+// Then replace this with the published ID (starts with 'e/' followed by long string)
+const PUBLISHED_SHEET_ID = '1lHXna6z1NX3UNEQ-ujRVr3BF8MFY05_z1H7TUKPVuhM';
 
 // Fallback data in case Google Sheets is not accessible
 const FALLBACK_DATA: SalsaStep[] = [
