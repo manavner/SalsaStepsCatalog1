@@ -1,6 +1,7 @@
 import { SalsaStep } from '@/types/SalsaStep';
 
-const SHEET_ID = '1lHXna6z1NX3UNEQ-ujRVr3BF8MFY05_z1H7TUKPVuhM';
+// Published Google Sheets CSV URL
+const PUBLISHED_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQwXCQ2XoXYp3LdTuisNkzp9MLavv30da1ZaOC53PJvrnr6qTNShAIOthkEJ6x9jjHPoiYUNu6XV0Vi/pub?output=csv';
 
 // Fallback data in case Google Sheets is not accessible
 const FALLBACK_DATA: SalsaStep[] = [
@@ -35,51 +36,70 @@ const FALLBACK_DATA: SalsaStep[] = [
 ];
 
 export async function loadStepsData(): Promise<SalsaStep[]> {
+  console.log('🔄 Starting data load process...');
+  
   try {
-    // Multiple cache busting strategies
-    const timestamp = Date.now();
-    const random = Math.random().toString(36).substring(7);
-    const csvUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0&cachebust=${timestamp}&rand=${random}&_=${timestamp}`;
+    console.log('📥 Attempting to fetch CSV from published URL:', PUBLISHED_CSV_URL);
     
-    console.log('Fetching from URL:', csvUrl);
-    
-    const response = await fetch(csvUrl, {
+    const response = await fetch(PUBLISHED_CSV_URL, {
       method: 'GET',
-      cache: 'no-store',
       headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0',
-        'If-Modified-Since': 'Thu, 01 Jan 1970 00:00:00 GMT'
+        'Accept': 'text/csv,text/plain,*/*',
+        'User-Agent': 'Mozilla/5.0 (compatible; SalsaApp/1.0)'
       }
     });
     
+    console.log('📊 Response status:', response.status);
+    console.log('📊 Response headers:', Object.fromEntries(response.headers.entries()));
+    
     if (!response.ok) {
-      console.log(`Google Sheets request failed with status: ${response.status}`);
-      console.log('Using fallback data instead');
+      console.error('❌ HTTP Error:', response.status, response.statusText);
+      
+      // Try to get the response text to see the error
+      const errorText = await response.text();
+      console.log('❌ Error response body:', errorText.substring(0, 500));
+      
+      console.log('🔄 Falling back to sample data');
       return FALLBACK_DATA;
     }
     
     const csvText = await response.text();
-    console.log('Raw CSV length:', csvText.length);
-    console.log('First 300 chars:', csvText.substring(0, 300));
+    console.log('✅ Successfully fetched CSV data');
+    console.log('📏 CSV length:', csvText.length);
     
-    // Look for the specific step in raw data
-    const hasEnchufala = csvText.toLowerCase().includes('enchufala con chufala');
-    console.log('Raw CSV contains "enchufala con chufala":', hasEnchufala);
-    
-    const parsedData = parseCSV(csvText);
-    
-    // If parsing results in empty data, use fallback
-    if (parsedData.length === 0) {
-      console.log('Parsed data is empty, using fallback data');
+    if (csvText.length < 50) {
+      console.log('⚠️ CSV seems too short, content:', csvText);
       return FALLBACK_DATA;
     }
     
+    // Show first few lines for debugging
+    const lines = csvText.split('\n');
+    console.log('📝 Total lines:', lines.length);
+    console.log('📝 First 3 lines:');
+    lines.slice(0, 3).forEach((line, i) => {
+      console.log(`  ${i}: ${line}`);
+    });
+    
+    const parsedData = parseCSV(csvText);
+    
+    if (parsedData.length === 0) {
+      console.log('⚠️ No data parsed, using fallback');
+      return FALLBACK_DATA;
+    }
+    
+    console.log('✅ Successfully parsed', parsedData.length, 'steps');
+    
+    // Show sample of parsed data
+    console.log('📋 Sample parsed steps:');
+    parsedData.slice(0, 2).forEach((step, i) => {
+      console.log(`  ${i + 1}. "${step.stepName}" (${step.level}) - ${step.link}`);
+    });
+    
     return parsedData;
+    
   } catch (error) {
-    console.log('Network error occurred, using fallback data:', error.message);
-    console.log('Using fallback data due to error');
+    console.error('💥 Error loading data:', error);
+    console.log('🔄 Using fallback data due to error');
     return FALLBACK_DATA;
   }
 }
@@ -87,49 +107,93 @@ export async function loadStepsData(): Promise<SalsaStep[]> {
 function parseCSV(csvText: string): SalsaStep[] {
   const lines = csvText.trim().split('\n');
   
-  // Skip header row
+  if (lines.length <= 1) {
+    console.log('⚠️ CSV has no data rows');
+    return [];
+  }
+  
+  // Skip header row and parse data
   const dataLines = lines.slice(1);
+  console.log('🔍 Parsing', dataLines.length, 'data lines');
   
-  console.log('Total data lines to parse:', dataLines.length);
+  const steps: SalsaStep[] = [];
   
-  return dataLines.map(line => {
-    // Simple CSV parsing - handles basic cases
-    const values = parseCSVLine(line);
-    
-    return {
-      level: values[0]?.trim() || '',
-      stepName: values[1]?.trim() || '',
-      originalCount: values[2]?.trim() || '',
-      type: values[3]?.trim() || '',
-      link: values[4]?.trim() || '',
-    };
-  }).filter(step => {
-    const hasName = !!step.stepName;
-    if (step.stepName.toLowerCase().includes('enchufala con chufala')) {
-      console.log('Parsed Enchufala step:', step);
+  dataLines.forEach((line, index) => {
+    if (!line.trim()) {
+      console.log(`⏭️ Skipping empty line ${index + 2}`);
+      return;
     }
-    return hasName;
-  }); // Filter out empty rows
+    
+    try {
+      const columns = parseCSVLine(line);
+      
+      if (columns.length < 4) {
+        console.log(`⚠️ Line ${index + 2} has only ${columns.length} columns:`, columns);
+        return;
+      }
+      
+      const step: SalsaStep = {
+        level: columns[0]?.trim() || 'Unknown',
+        stepName: columns[1]?.trim() || 'Unnamed Step',
+        originalCount: columns[2]?.trim() || '8',
+        type: columns[3]?.trim() || 'Unknown',
+        link: columns[4]?.trim() || ''
+      };
+      
+      // Only include steps with valid names
+      if (step.stepName && step.stepName !== 'Unnamed Step') {
+        steps.push(step);
+        
+        if (index < 3) { // Log first few for debugging
+          console.log(`✅ Parsed step ${index + 1}:`, {
+            name: step.stepName,
+            level: step.level,
+            link: step.link ? 'Has link' : 'No link'
+          });
+        }
+      }
+      
+    } catch (parseError) {
+      console.log(`❌ Error parsing line ${index + 2}:`, parseError);
+    }
+  });
+  
+  console.log(`✅ Successfully parsed ${steps.length} valid steps`);
+  return steps;
 }
 
 function parseCSVLine(line: string): string[] {
-  const values: string[] = [];
+  const result: string[] = [];
   let current = '';
   let inQuotes = false;
   
   for (let i = 0; i < line.length; i++) {
     const char = line[i];
+    const nextChar = line[i + 1];
     
     if (char === '"') {
-      inQuotes = !inQuotes;
+      if (inQuotes && nextChar === '"') {
+        // Handle escaped quotes
+        current += '"';
+        i++; // Skip next quote
+      } else {
+        inQuotes = !inQuotes;
+      }
     } else if (char === ',' && !inQuotes) {
-      values.push(current);
+      result.push(current.trim());
       current = '';
     } else {
       current += char;
     }
   }
   
-  values.push(current);
-  return values;
+  result.push(current.trim());
+  
+  // Clean up quoted values
+  return result.map(value => {
+    if (value.startsWith('"') && value.endsWith('"')) {
+      return value.slice(1, -1);
+    }
+    return value;
+  });
 }
