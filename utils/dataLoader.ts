@@ -1,9 +1,7 @@
 import { SalsaStep } from '@/types/SalsaStep';
 
-// You need to publish your Google Sheet to web and get the published ID
-// Go to File > Share > Publish to web > Select CSV format > Publish
-// Then replace this with the published ID (starts with 'e/' followed by long string)
-const PUBLISHED_SHEET_ID = '1lHXna6z1NX3UNEQ-ujRVr3BF8MFY05_z1H7TUKPVuhM';
+// Published Google Sheets CSV URL
+const PUBLISHED_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQwXCQ2XoXYp3LdTuisNkzp9MLavv30da1ZaOC53PJvrnr6qTNShAIOthkEJ6x9jjHPoiYUNu6XV0Vi/pub?output=csv';
 
 // Fallback data in case Google Sheets is not accessible
 const FALLBACK_DATA: SalsaStep[] = [
@@ -41,15 +39,9 @@ export async function loadStepsData(): Promise<SalsaStep[]> {
   console.log('🔄 Starting data load process...');
   
   try {
-    // First, let's check if the sheet is publicly accessible
-    const testUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit#gid=0`;
-    console.log('📋 Sheet URL:', testUrl);
+    console.log('📥 Attempting to fetch CSV from published URL:', PUBLISHED_CSV_URL);
     
-    // Try the CSV export URL
-    const csvUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
-    console.log('📥 Attempting to fetch CSV from:', csvUrl);
-    
-    const response = await fetch(csvUrl, {
+    const response = await fetch(PUBLISHED_CSV_URL, {
       method: 'GET',
       headers: {
         'Accept': 'text/csv,text/plain,*/*',
