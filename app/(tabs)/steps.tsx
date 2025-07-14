@@ -9,15 +9,19 @@ export default function StepsScreen() {
   const [steps, setSteps] = useState<SalsaStep[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [expandedLevels, setExpandedLevels] = useState<Set<string>>(new Set());
+  const [expandedLevels, setExpandedLevels] = useState<Set<string>>(new Set(['Beginner']));
 
   useEffect(() => {
     loadData();
-    // Expand all levels when data loads
-    const allLevels = [...new Set(steps.map(step => step.level))];
-    setExpandedLevels(new Set(allLevels));
-  }, [steps]);
+  }, []);
 
+  useEffect(() => {
+    if (steps.length > 0) {
+      // Keep Beginner expanded and add all other levels
+      const allLevels = [...new Set(steps.map(step => step.level))];
+      setExpandedLevels(new Set(allLevels));
+    }
+  }, [steps]);
   const loadData = async () => {
     try {
       setLoading(true);
