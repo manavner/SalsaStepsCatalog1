@@ -1,48 +1,36 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+} from "react-native";
+import { Link } from "expo-router";
 import { Music, Play, Heart } from 'lucide-react-native';
 
-export default function WelcomeScreen() {
-  const router = useRouter();
-
+export default function HomeScreen() {
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.content}>
         <View style={styles.header}>
           <Music size={80} color="#1DB954" />
-          <Text style={styles.title}>Salsa Steps Catalog</Text>
-          <Text style={styles.subtitle}>by Avner Man</Text>
-        </View>
-
-        <View style={styles.features}>
-          <View style={styles.feature}>
-            <Play size={24} color="#1DB954" />
-            <Text style={styles.featureText}>Learn salsa steps at your own pace</Text>
-          </View>
-          <View style={styles.feature}>
-            <Heart size={24} color="#1DB954" />
-            <Text style={styles.featureText}>Organized by skill level</Text>
-          </View>
-          <View style={styles.feature}>
-            <Music size={24} color="#1DB954" />
-            <Text style={styles.featureText}>Spanish pronunciation guide</Text>
-          </View>
-        </View>
-
-        <TouchableOpacity 
-          style={styles.getStartedButton}
-          onPress={() => router.push('/steps')}
-        >
-          <Text style={styles.getStartedText}>Get Started</Text>
-        </TouchableOpacity>
-
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>
-            Discover and master salsa dance steps with video tutorials and pronunciation guides
+          <Text style={styles.title}>Welcome to Salsa Steps Catalog</Text>
+          <Text style={styles.subtitle}>
+            Your ultimate guide to learning salsa steps
           </Text>
+          <Link href="/(tabs)/steps" asChild>
+            <TouchableOpacity style={styles.button}>
+              <Text style={styles.buttonText}>Browse Steps</Text>
+            </TouchableOpacity>
+          </Link>
+          <Link href="/legal" asChild>
+            <TouchableOpacity style={[styles.button, styles.legalButton]}>
+              <Text style={styles.buttonText}>Legal Info</Text>
+            </TouchableOpacity>
+          </Link>
         </View>
       </View>
-    </ScrollView>
+    </View>
   );
 }
 
@@ -111,5 +99,28 @@ const styles = StyleSheet.create({
     color: '#B3B3B3',
     textAlign: 'center',
     lineHeight: 20,
+  },
+  button: {
+    backgroundColor: '#1DB954',
+    borderRadius: 25,
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    marginTop: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  legalButton: {
+    backgroundColor: "#6c757d",
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
