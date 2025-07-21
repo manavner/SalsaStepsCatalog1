@@ -23,7 +23,9 @@
     },
     "production-ios": {
       "ios": {
-        "ascAppId": "6748850627"
+        "ascAppId": "6748850627",
+        "appleId": "manAvner@gmail.com",
+        "appleTeamId": "J2DX23C6VJ"
       }
     }
   }
