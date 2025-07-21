@@ -6,29 +6,30 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Link } from "expo-router";
-import { Music, Play, Heart } from 'lucide-react-native';
 
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <View style={styles.header}>
-          <Music size={80} color="#1DB954" />
-          <Text style={styles.title}>Welcome to Salsa Steps Catalog</Text>
-          <Text style={styles.subtitle}>
-            Your ultimate guide to learning salsa steps
-          </Text>
-          <Link href="/(tabs)/steps" asChild>
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.buttonText}>Browse Steps</Text>
-            </TouchableOpacity>
-          </Link>
-          <Link href="/legal" asChild>
-            <TouchableOpacity style={[styles.button, styles.legalButton]}>
-              <Text style={styles.buttonText}>Legal Info</Text>
-            </TouchableOpacity>
-          </Link>
-        </View>
+        <Image
+          source={require("../../assets/images/icon.png")}
+          style={styles.logo}
+        />
+        <Text style={styles.title}>Welcome to Salsa Steps Catalog</Text>
+        <Text style={styles.creator}>by Avner Man</Text>
+        <Text style={styles.subtitle}>
+          Your ultimate guide to learning salsa steps
+        </Text>
+        <Link href="/(tabs)/steps" asChild>
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>Browse Steps</Text>
+          </TouchableOpacity>
+        </Link>
+        <Link href="/legal" asChild>
+          <TouchableOpacity style={[styles.button, styles.legalButton]}>
+            <Text style={styles.buttonText}>Legal Info</Text>
+          </TouchableOpacity>
+        </Link>
       </View>
     </View>
   );
@@ -37,75 +38,44 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#191414',
+    backgroundColor: "#121212",
+    alignItems: "center",
+    justifyContent: "center",
   },
   content: {
-    flex: 1,
-    paddingHorizontal: 24,
-    paddingTop: 80,
-    paddingBottom: 40,
+    alignItems: "center",
+    paddingHorizontal: 20,
   },
-  header: {
-    alignItems: 'center',
-    marginBottom: 60,
+  logo: {
+    width: 100,
+    height: 100,
+    marginBottom: 20,
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    textAlign: 'center',
-    marginTop: 20,
-    marginBottom: 8,
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#ffffff",
+    textAlign: "center",
+    marginBottom: 5,
+  },
+  creator: {
+    fontSize: 16,
+    color: "#b3b3b3",
+    textAlign: "center",
+    marginBottom: 10,
   },
   subtitle: {
     fontSize: 18,
-    color: '#B3B3B3',
-    textAlign: 'center',
-  },
-  features: {
-    marginBottom: 50,
-  },
-  feature: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-    paddingHorizontal: 20,
-  },
-  featureText: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    marginLeft: 16,
-    flex: 1,
-  },
-  getStartedButton: {
-    backgroundColor: '#1DB954',
-    paddingVertical: 16,
-    paddingHorizontal: 40,
-    borderRadius: 25,
-    alignItems: 'center',
-    marginBottom: 40,
-  },
-  getStartedText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  footer: {
-    alignItems: 'center',
-    paddingHorizontal: 20,
-  },
-  footerText: {
-    fontSize: 14,
-    color: '#B3B3B3',
-    textAlign: 'center',
-    lineHeight: 20,
+    color: "#b3b3b3",
+    textAlign: "center",
+    marginBottom: 30,
   },
   button: {
-    backgroundColor: '#1DB954',
+    backgroundColor: "#1DB954",
     borderRadius: 25,
     paddingVertical: 12,
     paddingHorizontal: 30,
-    marginTop: 20,
+    marginTop: 10,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -114,6 +84,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    width: 250,
+    alignItems: "center",
   },
   legalButton: {
     backgroundColor: "#6c757d",
@@ -121,6 +93,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });

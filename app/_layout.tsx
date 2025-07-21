@@ -9,7 +9,17 @@ export default function RootLayout() {
   return (
     <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="legal" options={{ title: "Legal Info" }} />
+      <Stack.Screen
+        name="legal"
+        options={{
+          title: "Legal Info",
+          headerStyle: { backgroundColor: "#121212" },
+          headerTintColor: "#ffffff",
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
       <Stack.Screen name="+not-found" />
     </Stack>
   );

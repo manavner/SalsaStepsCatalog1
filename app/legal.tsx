@@ -17,7 +17,7 @@ export default function LegalScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#121212',
   },
   scrollContent: {
     padding: 20,
@@ -25,6 +25,6 @@ const styles = StyleSheet.create({
   disclaimerText: {
     fontSize: 16,
     lineHeight: 24,
-    color: '#333',
+    color: '#ffffff',
   },
 }); 
