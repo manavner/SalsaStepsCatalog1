@@ -7,7 +7,6 @@
     "icon": "./assets/images/icon.png",
     "scheme": "salsastepscatalog",
     "userInterfaceStyle": "light",
-    "newArchEnabled": false,
     "cli": {
       "appVersionSource": "local"
     },
