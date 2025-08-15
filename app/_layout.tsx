@@ -1,0 +1,26 @@
+import { useEffect } from 'react';
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { useFrameworkReady } from '@/hooks/useFrameworkReady';
+
+export default function RootLayout() {
+  useFrameworkReady();
+
+  return (
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="legal"
+        options={{
+          title: "Legal Info",
+          headerStyle: { backgroundColor: "#121212" },
+          headerTintColor: "#ffffff",
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen name="+not-found" />
+    </Stack>
+  );
+}
